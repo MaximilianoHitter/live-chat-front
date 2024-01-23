@@ -10,6 +10,8 @@ import Register from './components/auth/Register/register'
 import Password from './components/auth/Password/password'
 import PasswordReset from './components/auth/PasswordReset/password-reset'
 import VerificationEmail from './components/auth/Verification/verification-email'
+import Form from './components/secciones/form'
+import NotRoute from './components/secciones/noroute'
 
 function App() {
   const { getToken, getUser } = AuthUser();
@@ -26,6 +28,9 @@ function App() {
             {!getToken() && !getUser() ?
               <div>
                 <Button className='mx-2'>
+                  <Link to={"/form"}>Formulario</Link>
+                </Button>
+                <Button className='mx-2'>
                   <Link to={"/login"}>Ingresar</Link>
                 </Button>
                 <Button className='' variant={"outline"}>
@@ -41,12 +46,14 @@ function App() {
       </div>
       <div className='container'>
         <Routes>
+          <Route path="*" element={<NotRoute />} />
           <Route path="/" element={<Home />} />
           <Route path="/password_reset" element={<Password/>}/>
           <Route path={"/response-password-reset/:token/:email"} element={<PasswordReset/>}/>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/verificar-email/:token/:email" element={<VerificationEmail />} />
+          <Route path="/form" element={<Form/>}/>
         </Routes>
       </div>
     </div>
