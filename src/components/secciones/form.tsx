@@ -4,14 +4,19 @@ import {useForm} from 'react-hook-form';
 import { singUpSchema, TSingUpSchema } from "@/lib/types";
 import {zodResolver} from '@hookform/resolvers/zod';
 import AuthUser from "@/lib/AuthUser";
+import { useToast } from "../ui/use-toast";
 
 export default function Form(){
+
+    const {toast} = useToast();
     const {http} = AuthUser();
     const {
         register,
         handleSubmit,
         formState: {errors, isSubmitting},
         reset,
+        setError,
+        setFocus
     } = useForm<TSingUpSchema>({
         resolver: zodResolver(singUpSchema),
     });
@@ -23,9 +28,26 @@ export default function Form(){
             reset();
         })
         .catch((e)=>{
-            console.log(e.response.data.error);
+            const error = e.response.data.error;
+            if(e.response.status == 422){
+                if(error?.general){
+                    toast({
+                        title: 'Error papi',
+                    })
+                }else{
+                    Object.entries(error).forEach((err, i) => {
+                        setError(err[0], { type: err[0], message: err[1][0] });
+                    });
+                }
+            }else{
+                toast({
+                    title: 'Error papi',
+                    description: e.response.data.error.general
+                })
+            }
+
+            
         })
-        //await new Promise((resolve)=>setTimeout(resolve, 1000));
     }
 
     return (
@@ -39,7 +61,7 @@ export default function Form(){
                     className="px-4 py-2 rounded"
                 />
                 {errors.email && (
-                    <p className="text-destructive">{`${errors.email.message}`}</p>
+                    <p className="text-destructive text-center">{`${errors.email.message}`}</p>
                 )}
 
                 <Input 
@@ -49,7 +71,7 @@ export default function Form(){
                     className="px-4 py-2 rounded"
                 />
                 {errors.password && (
-                    <p className="text-destructive">{`${errors.password.message}`}</p>
+                    <p className="text-destructive text-center">{`${errors.password.message}`}</p>
                 )}
 
                 <Input 
@@ -59,7 +81,7 @@ export default function Form(){
                     className="px-4 py-2 rounded"
                 />
                 {errors.cpassword && (
-                    <p className="text-destructive">{`${errors.cpassword.message}`}</p>
+                    <p className="text-destructive text-center">{`${errors.cpassword.message}`}</p>
                 )}
 
                 <Button
