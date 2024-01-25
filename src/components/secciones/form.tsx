@@ -1,21 +1,12 @@
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import {useForm} from 'react-hook-form';
-import {z} from 'zod';
+import { singUpSchema, TSingUpSchema } from "@/lib/types";
 import {zodResolver} from '@hookform/resolvers/zod';
-
-const singUpSchema = z.object({
-    email: z.string().email('El email es requerido'),
-    password: z.string().min(4, 'La contraseña debe poseer como mínimo 4 caracteres'),
-    cpassword: z.string()
-}).refine(data => data.password === data.cpassword, {
-    message: 'Las contraseñas deben coincidir',
-    path: ['cpassword']
-})
-
-type TSingUpSchema = z.infer<typeof singUpSchema>
+import AuthUser from "@/lib/AuthUser";
 
 export default function Form(){
+    const {http} = AuthUser();
     const {
         register,
         handleSubmit,
@@ -26,8 +17,15 @@ export default function Form(){
     });
 
     const onSubmit = async(data: TSingUpSchema)=>{
-        await new Promise((resolve)=>setTimeout(resolve, 1000));
-        reset();
+        await http.post('/form', data)
+        .then((res)=>{
+            console.log(res.data.data);
+            reset();
+        })
+        .catch((e)=>{
+            console.log(e.response.data.error);
+        })
+        //await new Promise((resolve)=>setTimeout(resolve, 1000));
     }
 
     return (

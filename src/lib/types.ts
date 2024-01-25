@@ -14,7 +14,7 @@ export type User = {
 
 export type Error = string|object|null
 
-const singUpSchema = z.object({
+export const singUpSchema = z.object({
     email: z.string().email('El email es requerido'),
     password: z.string().min(4, 'La contraseña debe poseer como mínimo 4 caracteres'),
     cpassword: z.string()
@@ -23,6 +23,6 @@ const singUpSchema = z.object({
     path: ['cpassword']
 })
 
-type TSingUpSchema = z.infer<typeof singUpSchema>
+export type TSingUpSchema = z.infer<typeof singUpSchema>
 
 
